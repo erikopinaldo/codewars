@@ -22,47 +22,40 @@ SnakesLadders.prototype.play = function(die1, die2) {
   
   if (this.gameOver === true) return `Game over!`
     
+  // Get player's stored position and add the roll value to get new position
+  this.playerPosition[this.playerTurn] += die1 + die2 
+
+  // If player passes square 100, then subtract the overshoot from their current position
+  if (this.playerPosition[this.playerTurn] > 100) {
+    this.playerPosition[this.playerTurn] = 100 - (this.playerPosition[this.playerTurn] - 100)
+  }
+
+  // Bonus phase (snakes or ladders)
+  // If player lands on the beginning of a snake or ladder, replace their current position with the snake/ladder destination 
+  if (this.playerPosition[this.playerTurn] in this.snakes) {
+    this.playerPosition[this.playerTurn] = this.snakes[this.playerPosition[this.playerTurn]]
+  }
+  else if (this.playerPosition[this.playerTurn] in this.ladders) {
+    this.playerPosition[this.playerTurn] = this.ladders[this.playerPosition[this.playerTurn]]
+  }
+
+  // These variables will be used for the final output string
+  let currentPlayer = this.playerTurn
+  let currentSquare = this.playerPosition[this.playerTurn]
+
+
+  // If the game isn't over, switch the player turn state and return player position string. Else, end the game
+  if (currentSquare != 100) {
+    // If each die have different values, switch to next player. 
+    // If both dice have the same value, the current player goes again.
+    if (die1 != die2) {
+      if (this.playerTurn === 1) this.playerTurn = 2
+      else this.playerTurn = 1
+    }   
+    return `Player ${currentPlayer} is on square ${currentSquare}`
+  }
   else {
-    // Dice roll value
-    let roll = die1 + die2
-
-    // Get player's stored position and add the roll value to get new position
-    this.playerPosition[this.playerTurn] += roll 
-
-    // If player passes square 100, then subtract the overshoot from their current position
-    if (this.playerPosition[this.playerTurn] > 100) {
-      this.playerPosition[this.playerTurn] = 100 - (this.playerPosition[this.playerTurn] - 100)
-    }
-
-    // Bonus phase (snakes or ladders)
-    // If player lands on the beginning of a snake or ladder, replace their current position with the snake/ladder destination 
-    if (this.playerPosition[this.playerTurn] in this.snakes) {
-      this.playerPosition[this.playerTurn] = this.snakes[this.playerPosition[this.playerTurn]]
-    }
-    else if (this.playerPosition[this.playerTurn] in this.ladders) {
-      this.playerPosition[this.playerTurn] = this.ladders[this.playerPosition[this.playerTurn]]
-    }
-
-    // These variables will be used for the final output string
-    let currentPlayer = this.playerTurn
-    let currentSquare = this.playerPosition[this.playerTurn]
-
-
-    // If the game isn't over, switch the player turn state and return player position string. Else, end the game
-    if (currentSquare != 100) {
-      // If roll is double dice, don't change playerTurn
-      // Else, switch to next player
-      if (die1 != die2) {
-        if (this.playerTurn === 1) {
-          this.playerTurn = 2
-        }
-        else this.playerTurn = 1
-      }   
-      return `Player ${currentPlayer} is on square ${currentSquare}`
-    }
-    else {
-      this.gameOver = true
-      return `Player ${currentPlayer} Wins!`
-    }
+    this.gameOver = true
+    return `Player ${currentPlayer} Wins!`
   }
 }
